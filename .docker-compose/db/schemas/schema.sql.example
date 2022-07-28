@@ -12,14 +12,14 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE USER 'criadorbd'@'%' IDENTIFIED BY '';
+CREATE USER 'criadorbd'@'%' IDENTIFIED BY '123456';
 
 GRANT ALL PRIVILEGES ON *.* TO 'criadorbd'@'%' WITH GRANT OPTION;
-GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON meusg.* TO 'mspb'@'%';
+GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON app.* TO 'mspb'@'%';
 
 DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 
 FLUSH PRIVILEGES;
 
 -- Copiando estrutura do banco de dados para meusg
-CREATE DATABASE IF NOT EXISTS `meusg` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+CREATE DATABASE IF NOT EXISTS `app` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;

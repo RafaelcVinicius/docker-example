@@ -17,9 +17,6 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd sockets
 
@@ -33,15 +30,19 @@ RUN mkdir -p /home/$user/.composer && \
     
 USER $user
 
-
-#
+# 
 # Frontend
-#
+# 
 
-FROM node:14.9 as frontend
+FROM node:14.18 as frontend
 
-WORKDIR /var/www/app
+WORKDIR /var/www/
 
-COPY artisan package.json webpack.mix.js .env ./
+COPY artisan package.json .env ./
 
 RUN yarn install
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+EXPOSE 8000
