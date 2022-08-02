@@ -1,7 +1,4 @@
-FROM php:8.1.1-fpm
-
-# Set working directory
-WORKDIR /var/www/
+FROM php:8.1-fpm
 
 # Arguments
 ARG user=rafael
@@ -17,6 +14,9 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip
 
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd sockets
 
@@ -27,22 +27,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
-    
+
+# Install redis
+RUN pecl install -o -f redis \
+    &&  rm -rf /tmp/pear \
+    &&  docker-php-ext-enable redis
+
+# Set working directory
+WORKDIR /var/www
+
 USER $user
-
-# 
-# Frontend
-# 
-
-FROM node:14.18 as frontend
-
-WORKDIR /var/www/
-
-COPY artisan package.json .env ./
-
-RUN yarn install
-
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-EXPOSE 8000
