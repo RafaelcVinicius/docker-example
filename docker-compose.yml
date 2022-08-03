@@ -3,11 +3,11 @@ version: "3.7"
 services:
   # Image project
   app:
-    depends_on:
-      - db
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
     container_name: app
     image: app
     restart: unless-stopped
@@ -17,46 +17,6 @@ services:
     networks: 
       - networks-app
 
-  # Nginx
-  nginx:
-    depends_on:
-      - app
-    container_name: app-nginx
-    image: nginx:alpine
-    restart: unless-stopped
-    ports: 
-      - "91:80"
-    volumes:
-      - ./:/var/www/
-      - ./.docker-compose/nginx/:/etc/nginx/conf.d/
-    networks:
-      - networks-app
-
-  # MariaDB
-  db:
-    image: mariadb:10.3
-    container_name: app-db
-    restart: unless-stopped
-    environment: 
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - database:/var/lib/mysql/
-      - ./.docker-compose/db/mysql:/etc/mysql/
-      - ./.docker-compose/db/schemas:/docker-entrypoint-initdb.d/
-    ports: 
-      - "3308:3306"
-    networks: 
-      - networks-app
-
 networks: 
   networks-app:
       driver: bridge
-
-volumes:
-  appcode:
-    driver: local
-  database:
-    driver: local
