@@ -3,27 +3,32 @@ version: "3.7"
 services:
   # Image project
   app:
+    depends_on:
+      - db
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: app
     image: app
     restart: unless-stopped
     working_dir: /var/www/
     volumes:
-      - ./:/var/www
+      - ./:/var/www/
     networks: 
       - networks-app
 
   # Nginx
   nginx:
+    depends_on:
+      - app
     container_name: app-nginx
     image: nginx:alpine
     restart: unless-stopped
     ports: 
       - "91:80"
-    volumes: 
-      - ./:/var/www
-      - ./docker-compose/nginx/:/etc/nginx/conf.d/
+    volumes:
+      - ./:/var/www/
+      - ./.docker-compose/nginx/:/etc/nginx/conf.d/
     networks:
       - networks-app
 
@@ -38,7 +43,8 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - ./.docker-compose/db/mysql:/var/lib/mysql/
+      - database:/var/lib/mysql/
+      - ./.docker-compose/db/mysql:/etc/mysql/
       - ./.docker-compose/db/schemas:/docker-entrypoint-initdb.d/
     ports: 
       - "3308:3306"
@@ -48,3 +54,9 @@ services:
 networks: 
   networks-app:
       driver: bridge
+
+volumes:
+  appcode:
+    driver: local
+  database:
+    driver: local

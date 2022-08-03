@@ -1,7 +1,4 @@
-FROM php:8.1.1-fpm
-
-# Set working directory
-WORKDIR /var/www/
+FROM php:8.1-fpm
 
 # Arguments
 ARG user=rafael
@@ -30,18 +27,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
-    
+
+# Install redis
+RUN pecl install -o -f redis \
+    &&  rm -rf /tmp/pear \
+    &&  docker-php-ext-enable redis
+
+# Set working directory
+WORKDIR /var/www
+
 USER $user
-
-
-#
-# Frontend
-#
-
-FROM node:14.9 as frontend
-
-WORKDIR /var/www/app
-
-COPY artisan package.json webpack.mix.js .env ./
-
-RUN yarn install
