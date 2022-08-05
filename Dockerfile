@@ -4,7 +4,9 @@ FROM node:alpine
 
 
 # instala um servidor http simples para servir conteúdo estático
-RUN npm install -g http-server
+# RUN npm install -g http-server
+
+RUN yarn global add @vue/cli
 
 # faz da pasta 'app' o diretório atual de trabalho
 WORKDIR /var/www
@@ -13,13 +15,15 @@ WORKDIR /var/www
 COPY package*.json ./
 
 # instala dependências do projeto
-RUN npm install
+RUN yarn install
 
 # copia arquivos e pastas para o diretório atual de trabalho (pasta 'app')
 COPY . .
 
 # compila a aplicação de produção com minificação
-RUN npm run build
+RUN yarn run build
 
 EXPOSE 8080
-CMD [ "http-server", "dist" ]
+
+# CMD [ "http-server", "dist" ]
+CMD [ "yarn", "serve" ]
