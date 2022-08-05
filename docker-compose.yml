@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: app
-    image: app
+    image: app-laravel
     restart: unless-stopped
     working_dir: /var/www/
     volumes:
